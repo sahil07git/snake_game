@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define BOARD_SIZE 100
+#define WIN_POSITION 100
+
+// Function to roll the dice
+int rollDice() {
+    return rand() % 6 + 1;
+}
+
+// Function to check for snakes and ladders
+int checkSnakeLadder(int position) {
+    switch (position) {
+        case 4:  return 14;
+        case 9:  return 31;
+        case 17: return 7;
+        case 20: return 38;
+        case 28: return 84;
+        case 40: return 59;
+        case 51: return 67;
+        case 54: return 34;
+        case 62: return 19;
+        case 63: return 81;
+        case 64: return 60;
+        case 87: return 24;
+        case 93: return 73;
+        case 95: return 75;
+        case 99: return 78;
+        default: return position;
+    }
+}
+
+// Function to print the current board position
+void printBoard(int player1, int player2) {
+    int i, j;
+    for (i = 10; i >= 1; i--) {
+        for (j = 1; j <= 10; j++) {
+            int position = (i % 2 != 0) ? (i - 1) * 10 + j : (i - 1) * 10 + (10 - j + 1);
+            if (position == player1 && position == player2) {
+                printf("MM ");
+            } else if (position == player1) {
+                printf("P1 ");
+            } else if (position == player2) {
+                printf("P2 ");
+            } else {
+                printf("-- ");
+            }
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int player1 = 0, player2 = 0, currentPlayer = 1, dice, newPosition;
+    char choice;
+
+    srand(time(NULL));
+
+    printf("*** Snake and Ladder Game ***\n");
+
+    while (player1 < WIN_POSITION && player2 < WIN_POSITION) {
+        printf("\nCurrent board:\n");
+        printBoard(player1, player2);
+
+        printf("\nPlayer %d, press enter to roll the dice: ", currentPlayer);
+        getchar();
+
+        dice = rollDice();
+        printf("Player %d rolled a %d!\n", currentPlayer, dice);
+
+        if (currentPlayer == 1) {
+            newPosition = player1 + dice;
+            if (newPosition <= BOARD_SIZE) {
+                player1 = checkSnakeLadder(newPosition);
+            }
+        } else {
+            newPosition = player2 + dice;
+            if (newPosition <= BOARD_SIZE) {
+                player2 = checkSnakeLadder(newPosition);
+            }
+        }
+
+        printf("Player %d, you are now at position %d.\n", currentPlayer, (currentPlayer == 1) ? player1 : player2);
+
+        if (dice == 6) {
+            printf("Player %d gets another turn!\n", currentPlayer);
+        } else {
+            currentPlayer = (currentPlayer == 1) ? 2 : 1;
+        }
+    }
+
+    printf("\nPlayer %d wins the game!\n", (player1 == WIN_POSITION) ? 1 : 2);
+
+    return 0;
+}
